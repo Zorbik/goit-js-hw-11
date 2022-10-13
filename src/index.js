@@ -17,7 +17,7 @@ let lightbox = new SimpleLightbox('.gallery a');
 refs.form.addEventListener('submit', onSearch);
 refs.loadButton.addEventListener('click', onLoadMore);
 
-async function onSearch(event) {
+function onSearch(event) {
   event.preventDefault();
   apiService.query = event.currentTarget.elements.searchQuery.value;
   apiService.resetPage();
@@ -28,8 +28,7 @@ async function onSearch(event) {
 async function onLoadMore() {
   buttonHidden();
   const response = await apiService.getItems();
-  console.log(`~ response`, response);
-  if (response.data.totalHits && response.config.url.includes('page=1')) {
+  if (response.data.totalHits && apiService.currentPage === 2) {
     Notify.success(`Hooray! We found ${response.data.totalHits} images.`);
   }
   createMarkup(response.data.hits);
@@ -42,8 +41,16 @@ function createMarkup(array) {
     );
 
   refs.gallery.insertAdjacentHTML('beforeend', galleryItem(array));
+
   lightbox.refresh();
   buttonShowen();
+
+  if (apiService.currentPage === 14) {
+    buttonHidden();
+    return Notify.info(
+      `We're sorry, but you've reached the end of search results.`
+    );
+  }
 }
 
 function removeMarkup() {

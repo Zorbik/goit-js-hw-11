@@ -23,9 +23,6 @@ export default class ApiService {
     try {
       const response = axios.get(url);
       this.increasePage();
-
-      console.log(`~ this.page`, this.page);
-
       return response;
     } catch (error) {
       console.error(error);
@@ -37,14 +34,11 @@ export default class ApiService {
   set query(searchQuery) {
     this.q = searchQuery;
   }
+  get currentPage() {
+    return this.page;
+  }
   increasePage() {
     this.page += 1;
-    if (this.page > 13) {
-      buttonHidden();
-      return Notify.info(
-        `We're sorry, but you've reached the end of search results.`
-      );
-    }
   }
   resetPage() {
     this.page = 1;

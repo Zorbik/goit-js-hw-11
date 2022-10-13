@@ -34,7 +34,9 @@ async function onLoadMore() {
   const response = await apiService.getItems();
   console.log(`~ response`, response);
 
-  // createMarkup(response.data.hits);
+  createMarkup(response.data.hits);
+  lightbox.refresh();
+
   toggleClassButton();
 }
 
@@ -55,7 +57,7 @@ export function toggleClassButton() {
   refs.loadButton.classList.toggle('isHidden');
 }
 
-let lightbox = new SimpleLightbox('.gallery gallery__link', {
+let lightbox = new SimpleLightbox('.gallery .gallery__link', {
   captionsData: 'alt',
   captionDelay: 250,
 });

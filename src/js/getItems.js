@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
-import { toggleClassButton } from '../index';
+import { buttonHidden } from '../index';
 
 const BASE_URL = 'https://pixabay.com/api/';
 
@@ -10,13 +10,6 @@ export default class ApiService {
     this.page = 1;
   }
   getItems() {
-    if (this.page === 13) {
-      toggleClassButton();
-
-      return Notify.info(
-        `We're sorry, but you've reached the end of search results.`
-      );
-    }
     const options = {
       key: '30500534-ec5f5c30a1edd00a61f5d8ab9',
       image_type: 'photo',
@@ -30,6 +23,7 @@ export default class ApiService {
     try {
       const response = axios.get(url);
       this.increasePage();
+
       console.log(`~ this.page`, this.page);
 
       return response;
@@ -45,6 +39,12 @@ export default class ApiService {
   }
   increasePage() {
     this.page += 1;
+    if (this.page > 13) {
+      buttonHidden();
+      return Notify.info(
+        `We're sorry, but you've reached the end of search results.`
+      );
+    }
   }
   resetPage() {
     this.page = 1;

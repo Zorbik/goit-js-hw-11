@@ -1,7 +1,6 @@
 import SimpleLightbox from 'simplelightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css';
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
-// import InfiniteScroll from 'infinite-scroll';
 import galleryItem from './templates/gallery_item.hbs';
 import ApiService from './js/getItems';
 
@@ -13,6 +12,8 @@ const refs = {
   loadButton: document.querySelector('.load-more'),
 };
 
+let lightbox = new SimpleLightbox('.gallery a');
+
 refs.form.addEventListener('submit', onSearch);
 refs.loadButton.addEventListener('click', onLoadMore);
 
@@ -20,24 +21,18 @@ async function onSearch(event) {
   event.preventDefault();
   apiService.query = event.currentTarget.elements.searchQuery.value;
   apiService.resetPage();
-
-  const response = await apiService.getItems();
-  console.log(`~ response`, response);
-
-  // removeMarkup();
-  createMarkup(response.data.hits);
-  toggleClassButton();
+  removeMarkup();
+  onLoadMore();
 }
 
 async function onLoadMore() {
-  toggleClassButton();
+  buttonHidden();
   const response = await apiService.getItems();
   console.log(`~ response`, response);
-
+  if (response.data.totalHits && response.config.url.includes('page=1')) {
+    Notify.success(`Hooray! We found ${response.data.totalHits} images.`);
+  }
   createMarkup(response.data.hits);
-  lightbox.refresh();
-
-  toggleClassButton();
 }
 
 function createMarkup(array) {
@@ -47,20 +42,17 @@ function createMarkup(array) {
     );
 
   refs.gallery.insertAdjacentHTML('beforeend', galleryItem(array));
+  lightbox.refresh();
+  buttonShowen();
 }
 
 function removeMarkup() {
   refs.gallery.innerHTML = '';
 }
 
-export function toggleClassButton() {
-  refs.loadButton.classList.toggle('isHidden');
+export function buttonHidden() {
+  refs.loadButton.classList.add('isHidden');
 }
-
-let lightbox = new SimpleLightbox('.gallery .gallery__link', {
-  captionsData: 'alt',
-  captionDelay: 250,
-});
-
-// let infScroll = new InfiniteScroll('.container');
-// infScroll.loadNextPage(onLoadMore);
+function buttonShowen() {
+  refs.loadButton.classList.remove('isHidden');
+}

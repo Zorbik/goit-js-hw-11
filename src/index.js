@@ -34,7 +34,7 @@ async function onLoadMore() {
   createMarkup(response.data.hits);
 }
 
-function createMarkup(array) {
+function createMarkup(array = []) {
   if (!array.length)
     return Notify.failure(
       `Sorry, there are no images matching your search query. Please try again.`
@@ -57,7 +57,7 @@ function removeMarkup() {
   refs.gallery.innerHTML = '';
 }
 
-export function buttonHidden() {
+function buttonHidden() {
   refs.loadButton.classList.add('isHidden');
 }
 function buttonShowen() {

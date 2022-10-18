@@ -1,6 +1,4 @@
 import axios from 'axios';
-import { Notify } from 'notiflix/build/notiflix-notify-aio';
-import { buttonHidden } from '../index';
 
 const BASE_URL = 'https://pixabay.com/api/';
 

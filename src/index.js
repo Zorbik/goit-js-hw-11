@@ -19,7 +19,7 @@ refs.loadButton.addEventListener('click', onLoadMore);
 
 function onSearch(event) {
   event.preventDefault();
-  apiService.query = event.currentTarget.elements.searchQuery.value;
+  apiService.query = event.target.searchQuery.value;
   apiService.resetPage();
   removeMarkup();
   onLoadMore();

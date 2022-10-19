@@ -21,18 +21,15 @@ img {
 }
 input {
   padding-left: 10px;
-  width: 200px;
+  width: 250px;
   height: 40px;
   border-radius: 3px;
   border: none;
-  transition: width 250ms linear;
-  &:focus-visible {
-    outline: 2px double #cef543;
-    width: 300px;
-  }
 }
 .search {
   transform: translateX(-100%);
+  padding: 0;
+  width: 60px;
   height: 40px;
   border: none;
   border-radius: 3px;

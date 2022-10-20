@@ -38,6 +38,7 @@ async function onLoadMore() {
     Notify.success(`Hooray! We found ${response.data.totalHits + 20} images.`);
   }
   createMarkup(response.data.hits);
+  lightbox.refresh();
 }
 
 function createMarkup(array = []) {
@@ -48,7 +49,6 @@ function createMarkup(array = []) {
 
   refs.gallery.insertAdjacentHTML('beforeend', galleryItem(array));
 
-  lightbox.refresh();
   buttonShowen();
 
   if (apiService.currentPage === 14) {

@@ -28,8 +28,14 @@ function onSearch(event) {
 async function onLoadMore() {
   buttonHidden();
   const response = await apiService.getItems();
-  if (response.data.totalHits && apiService.currentPage === 2) {
+  if (
+    response.data.totalHits > 0 &&
+    response.data.totalHits < 500 &&
+    apiService.currentPage === 2
+  ) {
     Notify.success(`Hooray! We found ${response.data.totalHits} images.`);
+  } else if (response.data.totalHits === 500 && apiService.currentPage === 2) {
+    Notify.success(`Hooray! We found ${response.data.totalHits + 20} images.`);
   }
   createMarkup(response.data.hits);
 }

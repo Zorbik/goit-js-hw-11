@@ -28,27 +28,32 @@ function onSearch(event) {
 async function onLoadMore() {
   buttonHidden();
   const response = await apiService.getItems();
-  if (
-    response.data.totalHits > 0 &&
-    response.data.totalHits < 500 &&
-    apiService.currentPage === 2
-  ) {
-    Notify.success(`Hooray! We found ${response.data.totalHits} images.`);
-  } else if (response.data.totalHits === 500 && apiService.currentPage === 2) {
-    Notify.success(`Hooray! We found ${response.data.totalHits + 20} images.`);
-  }
-  createMarkup(response.data.hits);
+  findImgMessage(response);
+  createMarkup(response);
   lightbox.refresh();
 }
 
-function createMarkup(array = []) {
-  if (!array.length)
+function findImgMessage(object = {}) {
+  const findImgs = object.totalHits;
+  if (findImgs > 0 && findImgs < 500 && apiService.currentPage === 2) {
+    Notify.success(`Hooray! We found ${findImgs} images.`);
+  } else if (findImgs === 500 && apiService.currentPage === 2) {
+    Notify.success(`Hooray! We found ${findImgs + 20} images.`);
+  }
+}
+
+function createMarkup(object = {}) {
+  const arrayImg = object.hits;
+  if (!arrayImg.length)
     return Notify.failure(
       `Sorry, there are no images matching your search query. Please try again.`
     );
 
-  refs.gallery.insertAdjacentHTML('beforeend', galleryItem(array));
+  refs.gallery.insertAdjacentHTML('beforeend', galleryItem(arrayImg));
 
+  if (arrayImg.length < 40) {
+    return;
+  }
   buttonShowen();
 
   if (apiService.currentPage === 14) {

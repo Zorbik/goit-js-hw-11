@@ -7,21 +7,21 @@ export default class ApiService {
     this.q = '';
     this.page = 1;
   }
-  getItems() {
-    const options = {
-      key: '30500534-ec5f5c30a1edd00a61f5d8ab9',
-      image_type: 'photo',
-      orientation: 'horizontal',
-      safesearch: true,
-    };
-    const { key, image_type, orientation, safesearch } = options;
-
-    const url = `${BASE_URL}?key=${key}&q=${this.q}&image_type=${image_type}&orientation=${orientation}&safesearch=${safesearch}&per_page=40&page=${this.page}`;
-
+  async getItems() {
     try {
-      const response = axios.get(url);
+      const response = await axios.get(`${BASE_URL}`, {
+        params: {
+          key: '30500534-ec5f5c30a1edd00a61f5d8ab9',
+          q: this.q,
+          image_type: 'photo',
+          orientation: 'horizontal',
+          safesearch: true,
+          per_page: 40,
+          page: this.page,
+        },
+      });
       this.increasePage();
-      return response;
+      return response.data;
     } catch (error) {
       console.error(error);
     }

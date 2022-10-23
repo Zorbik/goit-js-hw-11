@@ -20,7 +20,6 @@ export default class ApiService {
           page: this.page,
         },
       });
-      this.increasePage();
       return response.data;
     } catch (error) {
       console.error(error);

@@ -68,11 +68,8 @@ input {
   color: white;
   background-color: blue;
   border: none;
-  // opacity: 1;
-  // transition: opacity 500ms linear;
 }
 
 .isHidden {
-  opacity: 0;
-  pointer-events: none;
+  display: none;
 }

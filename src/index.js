@@ -1,10 +1,10 @@
 import SimpleLightbox from 'simplelightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css';
-import { Notify } from 'notiflix/build/notiflix-notify-aio';
 import galleryItem from './templates/gallery_item.hbs';
 import ApiService from './js/getItems';
+import { showNumFindImg, showMessage } from './js/notifications';
 
-const apiService = new ApiService();
+export const apiService = new ApiService();
 
 const refs = {
   form: document.querySelector('#search-form'),
@@ -27,41 +27,23 @@ function onSearch(event) {
 
 async function onLoadMore() {
   buttonHidden();
-  const response = await apiService.getItems();
-  findImgMessage(response);
-  createMarkup(response);
+  const { totalHits, hits } = await apiService.getItems();
+  showNumFindImg(totalHits);
+  renderMarkup(totalHits, hits);
   lightbox.refresh();
 }
 
-function findImgMessage(object = {}) {
-  const findImgs = object.totalHits;
-  if (findImgs > 0 && findImgs < 500 && apiService.currentPage === 2) {
-    Notify.success(`Hooray! We found ${findImgs} images.`);
-  } else if (findImgs === 500 && apiService.currentPage === 2) {
-    Notify.success(`Hooray! We found ${findImgs + 20} images.`);
-  }
-}
+function renderMarkup(totalHits, hits) {
+  if (!hits.length) return showMessage('failure');
 
-function createMarkup(object = {}) {
-  const arrayImg = object.hits;
-  if (!arrayImg.length)
-    return Notify.failure(
-      `Sorry, there are no images matching your search query. Please try again.`
-    );
+  refs.gallery.insertAdjacentHTML('beforeend', galleryItem(hits));
 
-  refs.gallery.insertAdjacentHTML('beforeend', galleryItem(arrayImg));
-
-  if (arrayImg.length < 40) {
+  if (totalHits - apiService.currentPage * 40 <= 0) {
+    showMessage('info');
     return;
   }
-  buttonShowen();
-
-  if (apiService.currentPage === 14) {
-    buttonHidden();
-    return Notify.info(
-      `We're sorry, but you've reached the end of search results.`
-    );
-  }
+  apiService.increasePage();
+  buttonShown();
 }
 
 function removeMarkup() {
@@ -71,6 +53,6 @@ function removeMarkup() {
 function buttonHidden() {
   refs.loadButton.classList.add('isHidden');
 }
-function buttonShowen() {
+function buttonShown() {
   refs.loadButton.classList.remove('isHidden');
 }

@@ -2,7 +2,9 @@ import SimpleLightbox from 'simplelightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css';
 import galleryItem from './templates/gallery_item.hbs';
 import ApiService from './js/getItems';
-import { showNumFindImg, showMessage } from './js/notifications';
+// import { showNumFindImg, showMessage } from './js/notifications';
+import { Notify } from 'notiflix/build/notiflix-notify-aio';
+import { notify, showMessage } from './js/notifications';
 
 export const apiService = new ApiService();
 
@@ -11,6 +13,8 @@ const refs = {
   gallery: document.querySelector('.gallery'),
   loadButton: document.querySelector('.load-more'),
 };
+
+const { types, messages } = notify;
 
 let lightbox = new SimpleLightbox('.gallery a');
 
@@ -28,20 +32,23 @@ function onSearch(event) {
 async function onLoadMore() {
   buttonHidden();
   const { totalHits, hits } = await apiService.getItems();
-  showNumFindImg(totalHits);
+  if (totalHits > 0 && apiService.currentPage === 1) {
+    showMessage(messages.found(totalHits), types.success);
+  }
   renderMarkup(totalHits, hits);
   lightbox.refresh();
 }
 
 function renderMarkup(totalHits, hits) {
-  if (!hits.length) return showMessage('failure');
+  if (!hits.length) return showMessage(messages.noImages, types.fail);
 
   refs.gallery.insertAdjacentHTML('beforeend', galleryItem(hits));
 
-  if (totalHits - apiService.currentPage * 40 <= 0) {
-    showMessage('info');
+  if (totalHits > 40 && totalHits - apiService.currentPage * 40 <= 0) {
+    showMessage(messages.searchEnd, types.info);
     return;
-  }
+  } else if (totalHits < 40) return;
+
   apiService.increasePage();
   buttonShown();
 }
